@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "888475508285",
+    "project_id": "therapalsy-app",
+    "storage_bucket": "therapalsy-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888475508285:android:2c7a48db2be317533f1454",
+        "android_client_info": {
+          "package_name": "com.therapalsy.therapalsy_capstone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "888475508285-vv1sgvf71ehn12d4evdsdaf3gbmg5ttv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.therapalsy.therapalsy_capstone",
+            "certificate_hash": "e96215db76628c960d02cdb51b031a1103d3539e"
+          }
+        },
+        {
+          "client_id": "888475508285-5id3vm5h8rl2sf28pfthqc44cul5mfbv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDssUu69HMuUVtrvUw1FWQVdLiXlNyA-b0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "888475508285-5id3vm5h8rl2sf28pfthqc44cul5mfbv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

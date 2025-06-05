@@ -1,0 +1,45 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+android {
+    namespace 'com.therapalsy.therapalsy_capstone'  // Namespace ditambahkan di sini
+    compileSdk flutter.compileSdkVersion
+    ndkVersion flutter.ndkVersion
+
+    defaultConfig {
+        applicationId "com.therapalsy.therapalsy_capstone"
+        minSdk flutter.minSdkVersion
+        targetSdk flutter.targetSdkVersion
+        versionCode flutter.versionCode
+        versionName flutter.versionName
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.debug  // Gunakan key store yang tepat untuk rilis
+        }
+    }
+}
+
+flutter {
+    source = "../.."  // Lokasi sumber Flutter
+}
+
+apply plugin: 'com.google.gms.google-services'
+
+dependencies {
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
+}
+
