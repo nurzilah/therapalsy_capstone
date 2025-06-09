@@ -17,7 +17,7 @@ class RegisterController extends GetxController {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.81.202:5000/api/auth/register'),
+        Uri.parse('https://177e-163-227-64-50.ngrok-free.app/api/auth/register'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'username': name.value,
@@ -54,7 +54,7 @@ class RegisterController extends GetxController {
       }
 
       final response = await http.post(
-        Uri.parse('http://192.168.81.202:5000/api/auth/google'),
+        Uri.parse('https://177e-163-227-64-50.ngrok-free.app/api/auth/google'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'token': idToken}),
       );

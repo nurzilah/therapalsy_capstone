@@ -187,7 +187,7 @@ class _TerapiBottomNav extends StatelessWidget {
           case 3:
           
             // Navigasi ke ProfileView
-            Get.offAll(() => const ProfileView());
+            Get.offAll(() => ProfileView());
             break;
         }
       },

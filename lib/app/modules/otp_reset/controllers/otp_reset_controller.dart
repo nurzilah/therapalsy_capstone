@@ -17,7 +17,7 @@ class OtpResetController extends GetxController {
       }
 
       final response = await http.post(
-        Uri.parse('http://192.168.81.202:5000/api/auth/reset-password'),
+        Uri.parse('https://177e-163-227-64-50.ngrok-free.app/api/auth/reset-password'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': emailValue,

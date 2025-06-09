@@ -2,15 +2,23 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:convert';
+import 'package:therapalsy_capstone/app/modules/auth/services/auth_services.dart';
+import 'package:therapalsy_capstone/app/routes/app_pages.dart';
+import 'package:therapalsy_capstone/app/modules/models/user_model.dart';
 
 class LoginController extends GetxController {
   var email = ''.obs;
   var password = ''.obs;
+  var isLoading = false.obs;
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email'],
+  );
 
   Future<void> login() async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.81.202:5000/api/auth/login'),
+        Uri.parse('https://177e-163-227-64-50.ngrok-free.app/api/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': email.value,
@@ -30,36 +38,49 @@ class LoginController extends GetxController {
     }
   }
 
-  Future<void> signInWithGoogle() async {
+  void loginWithGoogle() async {
+    print("[DEBUG] loginWithGoogle() dipanggil");
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        scopes: ['email'],
-        clientId: '888475508285-vv1sgvf71ehn12d4evdsdaf3gbmg5ttv.apps.googleusercontent.com',
-      );
+      await _googleSignIn.signOut();
+      final account = await _googleSignIn.signIn();
 
-      final googleUser = await googleSignIn.signIn();
-      final googleAuth = await googleUser?.authentication;
-      final idToken = googleAuth?.idToken;
+      if (account != null) {
+        final auth = await account.authentication;
 
-      if (idToken == null) {
-        Get.snackbar('Error', 'Google ID Token tidak ditemukan');
-        return;
-      }
+        final idToken = auth.idToken;
 
-      final response = await http.post(
-        Uri.parse('http://192.168.81.202:5000/api/auth/google'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'token': idToken}),
-      );
+        if (idToken != null) {
+          isLoading.value = true;
+          final user = await AuthServices.googleLogin(idToken);
+          isLoading.value = false;
 
-      if (response.statusCode == 200) {
-        Get.snackbar('Success', 'Login Google berhasil!');
-        Get.offAllNamed('/home');
-      } else {
-        Get.snackbar('Error', jsonDecode(response.body)['message']);
-      }
+          // final prefs = await SharedPreferences.getInstance();
+          // await prefs.setString('token', user.token);
+          // await prefs.setString('email', user.user.email);
+          // await prefs.setString('username', user.user.username);
+          // await prefs.setString('user_id', user.user.id);
+
+          // final box = GetStorage();
+          // box.write('username', user.user.username);
+          // box.write('email', user.user.email);
+          // box.write('hasPassword', user.user.hasPassword);
+
+          if (user.user.hasPassword == false) {
+            Get.offAllNamed(Routes.HOME,
+                arguments: {'needSetPassword': true});
+          } else {
+            Get.snackbar(
+                'Login Berhasil', 'Selamat datang ${user.user.username}!');
+            Get.offAllNamed(Routes.HOME);
+          }
+        } else {
+          Get.snackbar('Error', 'Gagal mendapatkan token dari Google');
+        }
+      } else {}
     } catch (e) {
-      Get.snackbar('Error', 'Google Sign-In gagal: $e');
+      isLoading.value = false;
+      print("Google login error: $e");
+      Get.snackbar('Error', 'Gagal login dengan Google');
     }
   }
 }

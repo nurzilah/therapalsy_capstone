@@ -89,7 +89,7 @@ class _LoginViewState extends State<LoginView> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: controller.signInWithGoogle,
+                    onPressed: controller.loginWithGoogle,
                     icon: Image.asset(
                       'assets/images/google.png',
                       width: 24,

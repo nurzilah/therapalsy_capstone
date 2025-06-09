@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "888475508285-vv1sgvf71ehn12d4evdsdaf3gbmg5ttv.apps.googleusercontent.com",
+          "client_id": "888475508285-u59or3ckprgr990uevds67ud5b8c7v16.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.therapalsy.therapalsy_capstone",
-            "certificate_hash": "e96215db76628c960d02cdb51b031a1103d3539e"
+            "certificate_hash": "8652fc2d252bb989dac2cd64d16a1cfc2093d99d"
           }
         },
         {

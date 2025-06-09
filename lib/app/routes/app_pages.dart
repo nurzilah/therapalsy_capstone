@@ -5,8 +5,12 @@ import '../modules/auth/views/splash_screen.dart';
 import '../modules/auth/views/welcome_screen.dart';
 import '../modules/deteksi/bindings/deteksi_binding.dart';
 import '../modules/deteksi/views/deteksi_view.dart';
+import '../modules/editprofile/bindings/editprofile_binding.dart';
+import '../modules/editprofile/views/editprofile_view.dart';
 import '../modules/emailverification/bindings/emailverification_binding.dart';
 import '../modules/emailverification/views/emailverification_view.dart';
+import '../modules/faq/bindings/faq_binding.dart';
+import '../modules/faq/views/faq_view.dart';
 import '../modules/forgot/bindings/forgot_binding.dart';
 import '../modules/forgot/views/forgot_view.dart';
 import '../modules/home/bindings/home_binding.dart';
@@ -19,6 +23,8 @@ import '../modules/otp/bindings/otp_binding.dart';
 import '../modules/otp/views/otp_view.dart';
 import '../modules/otp_reset/bindings/otp_reset_binding.dart';
 import '../modules/otp_reset/views/otp_reset_view.dart';
+import '../modules/privacypolicy/bindings/privacypolicy_binding.dart';
+import '../modules/privacypolicy/views/privacypolicy_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/progress/bindings/progress_binding.dart';
@@ -72,7 +78,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.PROFILE,
-      page: () => const ProfileView(),
+      page: () =>  ProfileView(),
       binding: ProfileBinding(),
     ),
     GetPage(
@@ -114,6 +120,21 @@ class AppPages {
       name: _Paths.OTP_RESET,
       page: () => const OtpResetView(),
       binding: OtpResetBinding(),
+    ),
+    GetPage(
+      name: _Paths.EDITPROFILE,
+      page: () =>  EditProfileView(),
+      binding: EditprofileBinding(),
+    ),
+    GetPage(
+      name: _Paths.FAQ,
+      page: () =>  FaqView(),
+      binding: FaqBinding(),
+    ),
+    GetPage(
+      name: _Paths.PRIVACYPOLICY,
+      page: () =>  PrivacyPolicyView(),
+      binding: PrivacypolicyBinding(),
     ),
   ];
 }

@@ -20,6 +20,9 @@ abstract class Routes {
   static const NEWPASSWORD = _Paths.NEWPASSWORD;
   static const EMAILVERIFICATION = _Paths.EMAILVERIFICATION;
   static const OTP_RESET = _Paths.OTP_RESET;
+  static const EDITPROFILE = _Paths.EDITPROFILE;
+  static const FAQ = _Paths.FAQ;
+  static const PRIVACYPOLICY = _Paths.PRIVACYPOLICY;
 }
 
 abstract class _Paths {
@@ -42,4 +45,7 @@ abstract class _Paths {
   static const NEWPASSWORD = '/newpassword';
   static const EMAILVERIFICATION = '/emailverification';
   static const OTP_RESET = '/otp-reset';
+  static const EDITPROFILE = '/editprofile';
+  static const FAQ = '/faq';
+  static const PRIVACYPOLICY = '/privacypolicy';
 }
