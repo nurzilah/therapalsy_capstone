@@ -1,41 +1,216 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/profile_controller.dart';
+import 'package:therapalsy_capstone/app/modules/faq/views/faq_view.dart';
+import 'package:therapalsy_capstone/app/modules/privacypolicy/views/privacypolicy_view.dart';
+
+import '../../editprofile/views/editprofile_view.dart';
+import '../../privacypolicy/bindings/privacypolicy_binding.dart';
 
 class ProfileView extends StatelessWidget {
-  final controller = Get.put(ProfileController());
+  const ProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final Color mainGreen = const Color(0xFF306A5A);
+
     return Scaffold(
-      body: Obx(() => Column(
+      backgroundColor: Colors.white,
+      body: Stack(
         children: [
+          // Latar belakang hijau atas
           Container(
-            color: Colors.teal[700],
-            padding: const EdgeInsets.only(top: 60),
+            height: 250,
+            width: double.infinity,
+            color: mainGreen,
+          ),
+          // Konten utama
+          SafeArea(
             child: Column(
               children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: controller.profileImage.value != null
-                      ? NetworkImage(controller.profileImage.value!)
-                      : AssetImage("assets/default_avatar.png") as ImageProvider,
+                // AppBar custom transparan
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, left: 8, right: 8),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+                        onPressed: () => Get.back(),
+                      ),
+                      const Expanded(
+                        child: Center(
+                          child: Text(
+                            'PROFILE',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 2,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Opacity(
+                        opacity: 0,
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                          onPressed: null,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                Text(controller.username.value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Text(controller.email.value),
-                ElevatedButton(
-                  onPressed: () => Get.toNamed('/edit-profile'),
-                  child: Text('EDIT PROFILE'),
+                // Spacer agar foto profil menjorok ke bawah
+                const SizedBox(height: 18),
+                // Foto profil bulat dengan border putih
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      height: 200,
+                      width: 200,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 6),
+                        color: Colors.white,
+                      ),
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/images/terapi.png', // Ganti sesuai asset kamu
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                // Nama dan email
+                const Text(
+                  'Mutiara Nurzilah',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'smpolmbcantik@gmail.com',
+                  style: TextStyle(
+                    fontSize: 14.5,
+                    color: Colors.black54,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                // Tombol Edit Profile
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 60),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Navigasi ke halaman edit profile
+                      Get.to(() => EditProfileView());
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: mainGreen,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        'EDIT PROFILE',
+                        style: TextStyle(
+                          fontSize: 15.5,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.1,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 28),
+                // Menu List
+                _ProfileMenuItem(
+                  icon: Icons.privacy_tip_outlined,
+                  text: 'Privacy Policy',
+                  onTap: () {
+                    Get.to(() => PrivacyPolicyView(), binding: PrivacypolicyBinding());
+
+                  },
+                ),
+                _ProfileMenuItem(
+                  icon: Icons.help_outline,
+                  text: 'FAQ',
+                  onTap: () {
+                    Get.to(() => FaqView());
+
+                  },
+                ),
+                _ProfileMenuItem(
+                  icon: Icons.history,
+                  text: 'Sign In History',
+                  onTap: () {
+                    // Get.to(() => SignInHistoryPage());
+                  },
+                ),
+                _ProfileMenuItem(
+                  icon: Icons.logout,
+                  text: 'Sign Out',
+                  onTap: () {
+                    // Tampilkan dialog logout
+                  },
                 ),
               ],
             ),
           ),
-          ListTile(title: Text("Privacy Policy"), trailing: Icon(Icons.arrow_forward_ios), onTap: () => Get.toNamed('/privacy-policy')),
-          ListTile(title: Text("FAQ"), trailing: Icon(Icons.arrow_forward_ios), onTap: () => Get.toNamed('/faq')),
-          ListTile(title: Text("Sign In History\nLast login: ${controller.lastLogin.value}"), trailing: Icon(Icons.expand_more)),
-          ListTile(title: Text("Sign Out"), trailing: Icon(Icons.logout), onTap: controller.logout),
         ],
-      )),
+      ),
+    );
+  }
+}
+
+// Widget menu list profile
+class _ProfileMenuItem extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final VoidCallback onTap;
+
+  const _ProfileMenuItem({
+    required this.icon,
+    required this.text,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
+          child: Row(
+            children: [
+              Icon(icon, color: Colors.black54, size: 26),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Text(
+                  text,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.black38, size: 26),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

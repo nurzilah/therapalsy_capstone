@@ -41,9 +41,16 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.SPLASH; // Mulai dari splash screen
+  static const INITIAL = Routes.HOME; // Mulai dari splash screen
 
   static final routes = [
+        // Rute untuk HomeScreen
+    GetPage(
+      name: _Paths.HOME,
+      page: () => const HomeView(),
+      binding: HomeBinding(),
+    ),
+    
     // Rute untuk SplashScreen
     GetPage(
       name: _Paths.SPLASH,
@@ -57,12 +64,6 @@ class AppPages {
       binding: AuthBinding(),
     ),
     // Rute untuk SignInScreen
-    // Rute untuk HomeScreen
-    GetPage(
-      name: _Paths.HOME,
-      page: () => const HomeView(),
-      binding: HomeBinding(),
-    ),
 
     // Rute untuk DeteksiScreen
     GetPage(

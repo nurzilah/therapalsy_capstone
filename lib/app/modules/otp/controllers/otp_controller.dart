@@ -20,7 +20,7 @@ class OtpController extends GetxController {
 
     try {
       final response = await http.post(
-        Uri.parse('https://177e-163-227-64-50.ngrok-free.app/api/auth/verify-otp'),
+        Uri.parse('https://evidently-moved-marmoset.ngrok-free.app/api/auth/verify-otp'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email, 'otp': otp.value}),
       );

@@ -1,12 +1,15 @@
 import 'package:get/get.dart';
 
 class PrivacypolicyController extends GetxController {
-  //TODO: Implement PrivacypolicyController
+  // Observable untuk lastUpdate
+  final lastUpdate = ''.obs;
 
-  final count = 0.obs;
   @override
   void onInit() {
     super.onInit();
+
+    // Set tanggal sekarang sebagai lastUpdate
+    lastUpdate.value = DateTime.now().toString().split(' ')[0];
   }
 
   @override
@@ -18,6 +21,4 @@ class PrivacypolicyController extends GetxController {
   void onClose() {
     super.onClose();
   }
-
-  void increment() => count.value++;
 }

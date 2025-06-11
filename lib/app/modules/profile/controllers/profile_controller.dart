@@ -17,7 +17,7 @@ class ProfileController extends GetxController {
   }
 
   void fetchProfile() async {
-    var response = await http.get(Uri.parse("https://177e-163-227-64-50.ngrok-free.app/api/user/profile"));
+    var response = await http.get(Uri.parse("https://evidently-moved-marmoset.ngrok-free.app/api/user/profile"));
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
       username.value = data['username'];
@@ -28,7 +28,7 @@ class ProfileController extends GetxController {
   }
 
   void saveProfile(String newName, String newEmail) async {
-    var response = await http.post(Uri.parse("https://177e-163-227-64-50.ngrok-free.app/api/user/update"),
+    var response = await http.post(Uri.parse("https://evidently-moved-marmoset.ngrok-free.app/api/user/update"),
       body: {"username": newName, "email": newEmail});
     if (response.statusCode == 200) {
       fetchProfile();
@@ -40,7 +40,7 @@ class ProfileController extends GetxController {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      var request = http.MultipartRequest('POST', Uri.parse("https://177e-163-227-64-50.ngrok-free.app/api/user/upload"));
+      var request = http.MultipartRequest('POST', Uri.parse("https://evidently-moved-marmoset.ngrok-free.app/api/user/upload"));
       request.files.add(await http.MultipartFile.fromPath('file', pickedFile.path));
       var res = await request.send();
       if (res.statusCode == 200) {
