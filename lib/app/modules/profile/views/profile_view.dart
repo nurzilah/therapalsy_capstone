@@ -4,7 +4,9 @@ import 'package:therapalsy_capstone/app/modules/faq/views/faq_view.dart';
 import 'package:therapalsy_capstone/app/modules/privacypolicy/views/privacypolicy_view.dart';
 
 import '../../editprofile/views/editprofile_view.dart';
+import '../../historylogin/views/historylogin_view.dart';
 import '../../privacypolicy/bindings/privacypolicy_binding.dart';
+import 'package:get_storage/get_storage.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
@@ -153,8 +155,20 @@ class ProfileView extends StatelessWidget {
                   icon: Icons.history,
                   text: 'Sign In History',
                   onTap: () {
-                    // Get.to(() => SignInHistoryPage());
+                    final storage = GetStorage();
+                    final token = storage.read('token');
+                    final userId = storage.read('user_id');
+
+                    if (token != null && userId != null) {
+                      Get.toNamed('/historylogin', arguments: {
+                        'userId': userId,
+                        'token': token,
+                      });
+                    } else {
+                      Get.snackbar('Error', 'User not logged in');
+                    }
                   },
+
                 ),
                 _ProfileMenuItem(
                   icon: Icons.logout,

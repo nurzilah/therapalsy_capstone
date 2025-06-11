@@ -1,61 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'welcome_screen.dart';
+import 'package:get_storage/get_storage.dart';
+import '../../../routes/app_pages.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Delay + cek token
+    Future.delayed(const Duration(seconds: 2), () {
+      final box = GetStorage();
+      final token = box.read('token');
+
+      if (token != null) {
+        Get.offAllNamed(Routes.HOME); // kalau sudah login
+      } else {
+        Get.offAllNamed(Routes.WELCOME); // belum login
+      }
+    });
+
+    return const Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Spacer(flex: 3),
-              
-              // Logo Image
-              Image.asset(
-                'assets/images/logo_therapalsy.png',
-                width: 550,
-              ),
-              
-              
-              const Spacer(flex: 4),
-              
-              // Get Started Button
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Get.off(() => WelcomeScreen());
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 48, 106, 90), // Hijau tua yang sesuai dengan pixel sampel
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                    ),
-                    child: const Text(
-                      'GET STARTED',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 40),
-            ],
-          ),
+      body: Center(
+        child: Image(
+          image: AssetImage('assets/images/logo_therapalsy.png'),
+          width: 250,
         ),
       ),
     );

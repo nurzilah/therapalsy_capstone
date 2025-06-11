@@ -13,6 +13,8 @@ import '../modules/faq/bindings/faq_binding.dart';
 import '../modules/faq/views/faq_view.dart';
 import '../modules/forgot/bindings/forgot_binding.dart';
 import '../modules/forgot/views/forgot_view.dart';
+import '../modules/historylogin/bindings/historylogin_binding.dart';
+import '../modules/historylogin/views/historylogin_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/login/bindings/login_binding.dart';
@@ -41,16 +43,9 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.HOME; // Mulai dari splash screen
+  static const INITIAL = Routes.SPLASH; // Mulai dari splash screen
 
   static final routes = [
-        // Rute untuk HomeScreen
-    GetPage(
-      name: _Paths.HOME,
-      page: () => const HomeView(),
-      binding: HomeBinding(),
-    ),
-    
     // Rute untuk SplashScreen
     GetPage(
       name: _Paths.SPLASH,
@@ -63,8 +58,23 @@ class AppPages {
       page: () => WelcomeScreen(),
       binding: AuthBinding(),
     ),
+    GetPage(
+      name: _Paths.REGISTER,
+      page: () => const RegisterView(),
+      binding: RegisterBinding(),
+    ),    
     // Rute untuk SignInScreen
-
+    GetPage(
+      name: _Paths.LOGIN,
+      page: () => LoginView(),
+      binding: LoginBinding(),
+    ),
+    // Rute untuk HomeScreen
+    GetPage(
+      name: _Paths.HOME,
+      page: () => const HomeView(),
+      binding: HomeBinding(),
+    ),
     // Rute untuk DeteksiScreen
     GetPage(
       name: _Paths.DETEKSI,
@@ -79,7 +89,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.PROFILE,
-      page: () =>  ProfileView(),
+      page: () => ProfileView(),
       binding: ProfileBinding(),
     ),
     GetPage(
@@ -87,11 +97,7 @@ class AppPages {
       page: () => const ProgressView(),
       binding: ProgressBinding(),
     ),
-    GetPage(
-      name: _Paths.REGISTER,
-      page: () => const RegisterView(),
-      binding: RegisterBinding(),
-    ),
+
     GetPage(
       name: _Paths.LOGIN,
       page: () => const LoginView(),
@@ -124,18 +130,23 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.EDITPROFILE,
-      page: () =>  EditProfileView(),
+      page: () => EditProfileView(),
       binding: EditprofileBinding(),
     ),
     GetPage(
       name: _Paths.FAQ,
-      page: () =>  FaqView(),
+      page: () => FaqView(),
       binding: FaqBinding(),
     ),
     GetPage(
       name: _Paths.PRIVACYPOLICY,
-      page: () =>  PrivacyPolicyView(),
+      page: () => PrivacyPolicyView(),
       binding: PrivacypolicyBinding(),
+    ),
+    GetPage(
+      name: _Paths.HISTORYLOGIN,
+      page: () => HistoryloginView(),
+      binding: HistoryloginBinding(),
     ),
   ];
 }

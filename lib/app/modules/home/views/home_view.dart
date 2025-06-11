@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../deteksi/views/deteksi_view.dart';
 import '../../profile/views/profile_view.dart';
@@ -15,30 +16,26 @@ class HomeView extends GetView<HomeController> {
     final Color mainGreen = const Color(0xFF316B5C);
     final double cardHeight = 290;
     final double cardRadius = 22;
-    
 
-    // List card data
     final List<_HomeCardData> cards = [
       _HomeCardData(
-        
         bgColor: const Color(0xFFF7C6C6),
         image: 'assets/images/dashboard.png',
         title: "Lets Try\nFace exercise\nfor Bell’s Palsy\nnow!",
         subtitle: "10 minutes",
         buttonText: "LETS TRY !",
         onPressed: () {
-          Get.to(() => TerapiView ());
+          Get.to(() => TerapiView());
         },
       ),
       _HomeCardData(
         bgColor: const Color(0xFFF7C6C6),
-        image: 'assets/images/deteksi.png',
+        image: 'assets/images/face1.png',
         title: "Detect your face\nand start your\nrecovery journey\nnow!",
         subtitle: "Fast Scan",
         buttonText: "DETECT MY FACE",
         onPressed: () {
-        Get.offAll(() => const DeteksiView());
-      
+          Get.offAll(() => const DeteksiView());
         },
       ),
     ];
@@ -55,15 +52,13 @@ class HomeView extends GetView<HomeController> {
               child: Text(
                 'Welcome to Therapalsy !',
                 style: TextStyle(
-                  fontSize: 31,
+                  fontSize: 28,
                   fontWeight: FontWeight.w700,
                   color: mainGreen,
                 ),
               ),
             ),
             const SizedBox(height: 18),
-
-            // Carousel slider / PageView
             SizedBox(
               height: cardHeight + 16,
               child: PageView.builder(
@@ -85,18 +80,9 @@ class HomeView extends GetView<HomeController> {
                 },
               ),
             ),
-
             const SizedBox(height: 16),
-            // Dot indicator
-            Center(
-              child: _PageIndicator(
-                count: cards.length,
-              ),
-            ),
-
+            Center(child: _PageIndicator(count: cards.length)),
             const SizedBox(height: 30),
-
-            // Section: Tentang Bell's Palsy
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 22),
               child: Text(
@@ -109,8 +95,6 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
             const SizedBox(height: 14),
-
-            // FAQ Card 1
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5),
               child: _FaqCard(
@@ -119,8 +103,6 @@ class HomeView extends GetView<HomeController> {
                 mainGreen: mainGreen,
               ),
             ),
-
-            // FAQ Card 2
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5),
               child: _FaqCard(
@@ -129,18 +111,36 @@ class HomeView extends GetView<HomeController> {
                 mainGreen: mainGreen,
               ),
             ),
-
             const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.web),
+                label: const Text('Buka Analisis Streamlit'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: mainGreen,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                onPressed: () {
+                  Get.toNamed('/streamlit');
+                },
+              ),
+            ),
+            const SizedBox(height: 30),
           ],
         ),
       ),
-      // Bottom Navigation Bar
       bottomNavigationBar: _HomeBottomNav(mainGreen: mainGreen),
     );
   }
 }
 
-// --- Widget untuk Card Pink di Carousel ---
+// --- DATA CLASS ---
 class _HomeCardData {
   final Color bgColor;
   final String image;
@@ -159,6 +159,7 @@ class _HomeCardData {
   });
 }
 
+// --- CARD WIDGET ---
 class _HomePinkCard extends StatelessWidget {
   final _HomeCardData data;
   final double height;
@@ -182,9 +183,9 @@ class _HomePinkCard extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Image
           Positioned(
             right: 0,
+            left: 60,
             top: 0,
             bottom: 0,
             child: ClipRRect(
@@ -194,12 +195,11 @@ class _HomePinkCard extends StatelessWidget {
               ),
               child: Image.asset(
                 data.image,
-                width: 120,
-                fit: BoxFit.cover,
+                width: 350,
+                fit: BoxFit.contain,
               ),
             ),
           ),
-          // Text dan tombol
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             child: Column(
@@ -219,8 +219,7 @@ class _HomePinkCard extends StatelessWidget {
                   children: [
                     if (data.subtitle == "10 minutes")
                       const Icon(Icons.access_time, color: Colors.white, size: 18),
-                    if (data.subtitle == "10 minutes")
-                      const SizedBox(width: 6),
+                    if (data.subtitle == "10 minutes") const SizedBox(width: 6),
                     Text(
                       data.subtitle,
                       style: const TextStyle(
@@ -264,41 +263,22 @@ class _HomePinkCard extends StatelessWidget {
   }
 }
 
-// --- Dot Indicator sederhana untuk PageView ---
-class _PageIndicator extends StatefulWidget {
+// --- PAGE INDICATOR ---
+class _PageIndicator extends StatelessWidget {
   final int count;
   const _PageIndicator({required this.count});
-
-  @override
-  State<_PageIndicator> createState() => _PageIndicatorState();
-}
-
-class _PageIndicatorState extends State<_PageIndicator> {
-  int currentPage = 0;
-  late final PageController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = PageController();
-    _controller.addListener(() {
-      setState(() {
-        currentPage = _controller.page?.round() ?? 0;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: List.generate(widget.count, (index) {
+      children: List.generate(count, (index) {
         return Container(
           width: 8,
           height: 8,
           margin: const EdgeInsets.symmetric(horizontal: 3),
           decoration: BoxDecoration(
-            color: currentPage == index ? const Color(0xFF316B5C) : Colors.grey[300],
+            color: index == 0 ? const Color(0xFF316B5C) : Colors.grey[300],
             shape: BoxShape.circle,
           ),
         );
@@ -307,7 +287,7 @@ class _PageIndicatorState extends State<_PageIndicator> {
   }
 }
 
-// --- FAQ Card Widget ---
+// --- FAQ CARD ---
 class _FaqCard extends StatelessWidget {
   final String title;
   final String content;
@@ -355,7 +335,7 @@ class _FaqCard extends StatelessWidget {
   }
 }
 
-// --- Bottom Navigation Bar ---
+// --- BOTTOM NAVIGATION ---
 class _HomeBottomNav extends StatelessWidget {
   final Color mainGreen;
   const _HomeBottomNav({required this.mainGreen});
@@ -368,40 +348,25 @@ class _HomeBottomNav extends StatelessWidget {
       showUnselectedLabels: true,
       type: BottomNavigationBarType.fixed,
       items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.crop_free),
-          label: 'Detection',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.show_chart),
-          label: 'Progress',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline),
-          label: 'Profile',
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
+        BottomNavigationBarItem(icon: Icon(Icons.crop_free), label: 'Detection'),
+        BottomNavigationBarItem(icon: Icon(Icons.show_chart), label: 'Progress'),
+        BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
       ],
       currentIndex: 0,
       onTap: (index) {
         switch (index) {
           case 0:
-            Get.offAll(() => const HomeView());
+            Get.to(() => const HomeView());
             break;
           case 1:
-            // Navigasi ke deteksi
-            Get.offAll(() => const DeteksiView());
+            Get.to(() => const DeteksiView());
             break;
           case 2:
-            // Navigasi ke progress
-            Get.offAll(() => const ProgressView());
+            Get.to(() => const ProgressView());
+            break;
           case 3:
-          
-            // Navigasi ke ProfileView
-            Get.offAll(() => ProfileView());
+            Get.to(() => const ProfileView());
             break;
         }
       },

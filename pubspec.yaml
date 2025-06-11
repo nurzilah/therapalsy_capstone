@@ -41,6 +41,7 @@ dependencies:
   google_sign_in: ^6.2.0
   image_picker: ^1.0.4
   webview_flutter: ^4.0.7
+  get_storage: ^2.1.1
 
 
 

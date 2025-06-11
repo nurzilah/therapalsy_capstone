@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'app/routes/app_pages.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await GetStorage.init();
+
+  final storage = GetStorage();
+  await storage.erase(); // ← Hapus token saat run
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key}); // Gunakan const dan super.key untuk best practice
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +26,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
         scaffoldBackgroundColor: Colors.white,
-        fontFamily: 'Roboto', // Atur font sesuai kebutuhan
+        fontFamily: 'Roboto',
         colorScheme: ColorScheme.fromSwatch().copyWith(
-          primary: const Color(0xFF316B5C), // Hijau sesuai desain
+          primary: const Color(0xFF316B5C),
           secondary: const Color(0xFF316B5C),
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
