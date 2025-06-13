@@ -24,13 +24,14 @@ abstract class Routes {
   static const FAQ = _Paths.FAQ;
   static const PRIVACYPOLICY = _Paths.PRIVACYPOLICY;
   static const HISTORYLOGIN = _Paths.HISTORYLOGIN;
+  static const CHANGEPASSWORD = _Paths.CHANGEPASSWORD;
 }
 
 abstract class _Paths {
   _Paths._();
   static const SPLASH = '/splash';
-  static const WELCOME = '/welcome'; 
-  static const HOME = '/home'; 
+  static const WELCOME = '/welcome';
+  static const HOME = '/home';
   static const SIGN_IN = '/sign-in';
   static const SIGN_UP = '/sign-up';
   static const TERAPI = '/terapi';
@@ -50,4 +51,5 @@ abstract class _Paths {
   static const FAQ = '/faq';
   static const PRIVACYPOLICY = '/privacypolicy';
   static const HISTORYLOGIN = '/historylogin';
+  static const CHANGEPASSWORD = '/changepassword';
 }

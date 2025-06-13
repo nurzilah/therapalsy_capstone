@@ -1,222 +1,153 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
-import '../../profile/controllers/profile_controller.dart';
+import '../controllers/editprofile_controller.dart';
 
-class EditProfileView extends StatefulWidget {
-  const EditProfileView({super.key});
-
-  @override
-  State<EditProfileView> createState() => _EditProfileViewState();
-}
-
-class _EditProfileViewState extends State<EditProfileView> {
-  final TextEditingController usernameController =
-      TextEditingController(text: 'Mutiara Nurzilah');
-  final TextEditingController emailController =
-      TextEditingController(text: 'smpolmbcantik@gmail.com');
+class EditProfileView extends StatelessWidget {
+  EditProfileView({super.key});
+  final controller = Get.put(EditprofileController());
+  final Color mainGreen = const Color(0xFF306A5A);
 
   @override
   Widget build(BuildContext context) {
-    final Color mainGreen = const Color(0xFF306A5A);
+    final TextEditingController nameCtrl = TextEditingController();
+    final TextEditingController emailCtrl = TextEditingController();
 
     return Scaffold(
       backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true,
-      body: Stack(
-        children: [
-          // Latar belakang hijau atas
-          Container(
-            height: 250,
-            width: double.infinity,
-            color: mainGreen,
-          ),
-          // Konten utama scrollable
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              child: Column(
-                children: [
-                  // AppBar custom transparan
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10, left: 8, right: 8),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
-                          onPressed: () => Get.back(),
-                        ),
-                        const Expanded(
-                          child: Center(
-                            child: Text(
-                              'EDIT PROFILE',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 2,
-                                color: Colors.white,
+      body: Obx(() {
+        nameCtrl.text = controller.usernameController.value;
+        emailCtrl.text = controller.emailController.value;
+
+        return Stack(
+          children: [
+            Container(height: 250, width: double.infinity, color: mainGreen),
+            SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    // AppBar
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+                            onPressed: () => Get.back(),
+                          ),
+                          const Expanded(
+                            child: Center(
+                              child: Text(
+                                'EDIT PROFILE',
+                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white),
                               ),
                             ),
                           ),
-                        ),
-                        Opacity(
-                          opacity: 0,
-                          child: IconButton(
-                            icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                            onPressed: null,
-                          ),
-                        ),
-                      ],
+                          const SizedBox(width: 48), // Spacer
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 18),
-                  // Foto profil bulat dengan border putih
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        height: 200,
-                        width: 200,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 6),
-                          color: Colors.white,
-                        ),
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/images/terapi.png', // Ganti sesuai asset kamu
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      // Tombol edit foto di pojok bawah kanan
-                      Positioned(
-                        bottom: 18,
-                        right: MediaQuery.of(context).size.width / 2 - 100 + 24,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: mainGreen,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
-                          ),
-                          child: IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.white, size: 20),
-                            onPressed: () {
-                              // Fitur ganti foto profil
-                            },
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  // Field Username
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 4),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+
+                    const SizedBox(height: 10),
+
+                    // Profile Image + Edit
+                    Stack(
+                      alignment: Alignment.center,
                       children: [
-                        const Text(
-                          'Username',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        TextField(
-                          controller: usernameController,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                        Obx(() {
+                          return Container(
+                            height: 180,
+                            width: 180,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 6),
+                              color: Colors.grey.shade200,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: Colors.black26),
+                            child: ClipOval(
+                              child: controller.imagePath.value != null
+                                  ? Image.file(controller.imagePath.value!, fit: BoxFit.cover)
+                                  : Image.asset('assets/images/terapi.png', fit: BoxFit.cover),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: mainGreen, width: 1.5),
-                            ),
-                          ),
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        const SizedBox(height: 18),
-                        // Field Email
-                        const Text(
-                          'Email',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        TextField(
-                          controller: emailController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: Colors.black26),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: mainGreen, width: 1.5),
+                          );
+                        }),
+                        Positioned(
+                          bottom: 12,
+                          right: MediaQuery.of(context).size.width / 2 - 90,
+                          child: InkWell(
+                            onTap: controller.pickAndUploadImage,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: mainGreen,
+                                border: Border.all(color: Colors.white, width: 2),
+                              ),
+                              child: const Icon(Icons.edit, color: Colors.white, size: 20),
                             ),
                           ),
-                          style: const TextStyle(fontSize: 16, color: Colors.black54),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 28),
-                  // Tombol Save Change
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 60),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Simpan perubahan profil
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: mainGreen,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
+
+                    const SizedBox(height: 24),
+
+                    // Form Fields
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Username', style: TextStyle(fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 6),
+                          TextField(
+                            controller: nameCtrl,
+                            onChanged: (val) => controller.usernameController.value = val,
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.all(16),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
                           ),
-                          elevation: 0,
-                        ),
-                        child: const Text(
-                          'SAVE CHANGE',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 1.1,
+                          const SizedBox(height: 20),
+                          const Text('Email', style: TextStyle(fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 6),
+                          TextField(
+                            controller: emailCtrl,
+                            readOnly: true,
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.all(16),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
                           ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // Save Button
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 60),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: controller.updateProfile,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: mainGreen,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                          ),
+                          child: const Text('SAVE CHANGES', style: TextStyle(fontWeight: FontWeight.w600)),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 30),
-                ],
+                    const SizedBox(height: 30),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 }

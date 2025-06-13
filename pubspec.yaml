@@ -42,12 +42,12 @@ dependencies:
   image_picker: ^1.0.4
   webview_flutter: ^4.0.7
   get_storage: ^2.1.1
+  device_info_plus: ^10.0.1
 
 
 
 dev_dependencies:
   dio: ^5.0.0
-  get: ^4.6.5
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
@@ -84,6 +84,7 @@ flutter:
     - assets/images/deteksi.png
     - assets/images/profile.jpeg
     - assets/images/google.png
+    - assets/images/face1.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

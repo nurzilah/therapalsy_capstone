@@ -8,20 +8,24 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Delay + cek token
-    Future.delayed(const Duration(seconds: 2), () {
+    // Pastikan dijalankan setelah UI dibangun
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final box = GetStorage();
       final token = box.read('token');
+      final userId = box.read('user_id');
 
-      if (token != null) {
-        Get.offAllNamed(Routes.HOME); // kalau sudah login
+      print('✅ TOKEN: $token');
+      print('✅ USER ID: $userId');
+
+      await Future.delayed(const Duration(seconds: 2)); // delay splash
+      if (token != null && userId != null) {
+        Get.offAllNamed(Routes.HOME);
       } else {
-        Get.offAllNamed(Routes.WELCOME); // belum login
+        Get.offAllNamed(Routes.WELCOME);
       }
     });
 
     return const Scaffold(
-      backgroundColor: Colors.white,
       body: Center(
         child: Image(
           image: AssetImage('assets/images/logo_therapalsy.png'),

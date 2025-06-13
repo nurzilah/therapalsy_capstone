@@ -1,86 +1,105 @@
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:convert';
-import 'package:therapalsy_capstone/app/modules/auth/services/auth_services.dart';
-import 'package:therapalsy_capstone/app/routes/app_pages.dart';
-import 'package:therapalsy_capstone/app/modules/models/user_model.dart';
 
 class LoginController extends GetxController {
   var email = ''.obs;
   var password = ''.obs;
-  var isLoading = false.obs;
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email'],
-  );
+  final box = GetStorage();
 
-  Future<void> login() async {
+  // Ambil nama device (realme, iPhone, Samsung, dll)
+  Future<String> getDeviceName() async {
+    final deviceInfo = DeviceInfoPlugin();
+    if (GetPlatform.isAndroid) {
+      final androidInfo = await deviceInfo.androidInfo;
+      return '${androidInfo.brand} ${androidInfo.model}';
+    } else if (GetPlatform.isIOS) {
+      final iosInfo = await deviceInfo.iosInfo;
+      return '${iosInfo.name} ${iosInfo.model}';
+    } else {
+      return 'Unknown Device';
+    }
+  }
+
+  Future<void> loginUser() async {
     try {
+      final device = await getDeviceName();
+
       final response = await http.post(
         Uri.parse('https://evidently-moved-marmoset.ngrok-free.app/api/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': email.value,
           'password': password.value,
+          'device': device, // ⬅️ kirim nama device ke backend
         }),
       );
 
       if (response.statusCode == 200) {
-        Get.snackbar('Success', 'Login berhasil!');
+        final data = jsonDecode(response.body);
+        final user = data['data'];
+        final token = data['access_token'];
+
+        box.write('token', token);
+        box.write('user_id', user['id']);
+
+        Get.snackbar('Selamat datang', user['username']);
         Get.offAllNamed('/home');
       } else {
-        final body = jsonDecode(response.body);
-        Get.snackbar('Error', body['message']);
+        Get.snackbar('Login Gagal', jsonDecode(response.body)['message']);
       }
     } catch (e) {
-      Get.snackbar('Error', 'Gagal menghubungi server: $e');
+      Get.snackbar('Error', 'Tidak dapat login: $e');
     }
   }
 
-  void loginWithGoogle() async {
-    print("[DEBUG] loginWithGoogle() dipanggil");
+  Future<void> signInWithGoogle() async {
     try {
-      await _googleSignIn.signOut();
-      final account = await _googleSignIn.signIn();
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        scopes: ['email'],
+        serverClientId: '888475508285-vv1sgvf71ehn12d4evdsdaf3gbmg5ttv.apps.googleusercontent.com',
+      );
 
-      if (account != null) {
-        final auth = await account.authentication;
+      final googleUser = await googleSignIn.signIn();
+      final googleAuth = await googleUser?.authentication;
+      final idToken = googleAuth?.idToken;
 
-        final idToken = auth.idToken;
+      if (idToken == null) {
+        Get.snackbar('Error', 'Google ID Token tidak tersedia');
+        return;
+      }
 
-        if (idToken != null) {
-          isLoading.value = true;
-          final user = await AuthServices.googleLogin(idToken);
-          isLoading.value = false;
+      final device = await getDeviceName(); // ⬅️ ambil device untuk Google login juga
 
-          // final prefs = await SharedPreferences.getInstance();
-          // await prefs.setString('token', user.token);
-          // await prefs.setString('email', user.user.email);
-          // await prefs.setString('username', user.user.username);
-          // await prefs.setString('user_id', user.user.id);
+      final response = await http.post(
+        Uri.parse('https://evidently-moved-marmoset.ngrok-free.app/api/auth/google'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'token': idToken,
+          'device': device, // ⬅️ kirim ke backend
+        }),
+      );
 
-          // final box = GetStorage();
-          // box.write('username', user.user.username);
-          // box.write('email', user.user.email);
-          // box.write('hasPassword', user.user.hasPassword);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final user = data['data'];
+        final token = data['access_token'];
 
-          if (user.user.hasPassword == false) {
-            Get.offAllNamed(Routes.HOME,
-                arguments: {'needSetPassword': true});
-          } else {
-            Get.snackbar(
-                'Login Berhasil', 'Selamat datang ${user.user.username}!');
-            Get.offAllNamed(Routes.HOME);
-          }
-        } else {
-          Get.snackbar('Error', 'Gagal mendapatkan token dari Google');
-        }
-      } else {}
+        box.write('token', token);
+        box.write('user_id', user['id']);
+
+        Get.snackbar('Success', 'Berhasil login dengan Google');
+        Get.offAllNamed('/home');
+      } else {
+        Get.snackbar('Gagal', jsonDecode(response.body)['message'] ?? 'Gagal login');
+      }
     } catch (e) {
-      isLoading.value = false;
-      print("Google login error: $e");
-      Get.snackbar('Error', 'Gagal login dengan Google');
+      Get.snackbar('Error', 'Google login error: $e');
     }
   }
 }

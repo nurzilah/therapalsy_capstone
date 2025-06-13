@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import '../modules/auth/bindings/auth_binding.dart';
 import '../modules/auth/views/splash_screen.dart';
 import '../modules/auth/views/welcome_screen.dart';
+import '../modules/changepassword/bindings/changepassword_binding.dart';
+import '../modules/changepassword/views/changepassword_view.dart';
 import '../modules/deteksi/bindings/deteksi_binding.dart';
 import '../modules/deteksi/views/deteksi_view.dart';
 import '../modules/editprofile/bindings/editprofile_binding.dart';
@@ -62,7 +64,7 @@ class AppPages {
       name: _Paths.REGISTER,
       page: () => const RegisterView(),
       binding: RegisterBinding(),
-    ),    
+    ),
     // Rute untuk SignInScreen
     GetPage(
       name: _Paths.LOGIN,
@@ -147,6 +149,11 @@ class AppPages {
       name: _Paths.HISTORYLOGIN,
       page: () => HistoryloginView(),
       binding: HistoryloginBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHANGEPASSWORD,
+      page: () => const ChangepasswordView(),
+      binding: ChangepasswordBinding(),
     ),
   ];
 }

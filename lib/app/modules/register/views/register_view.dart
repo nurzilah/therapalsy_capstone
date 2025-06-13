@@ -11,10 +11,8 @@ class RegisterView extends StatefulWidget {
 
 class _RegisterViewState extends State<RegisterView> {
   final RegisterController controller = Get.put(RegisterController());
-
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
-
   final Color mainGreen = const Color(0xFF316B5C);
 
   @override
@@ -36,8 +34,7 @@ class _RegisterViewState extends State<RegisterView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Sign Up',
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+                const Text('Sign Up', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 const Text('Create a new account to get started.',
                     style: TextStyle(fontSize: 16, color: Colors.black87)),
@@ -58,10 +55,7 @@ class _RegisterViewState extends State<RegisterView> {
                   obscureText: _obscurePassword,
                   onChanged: (v) => controller.password.value = v,
                   suffix: IconButton(
-                    icon: Icon(
-                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                      color: Colors.grey,
-                    ),
+                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
                     onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                   ),
                 ),
@@ -71,10 +65,7 @@ class _RegisterViewState extends State<RegisterView> {
                   obscureText: _obscureConfirm,
                   onChanged: (v) => controller.confirmPassword.value = v,
                   suffix: IconButton(
-                    icon: Icon(
-                      _obscureConfirm ? Icons.visibility_off : Icons.visibility,
-                      color: Colors.grey,
-                    ),
+                    icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
                     onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
                   ),
                 ),
@@ -90,10 +81,8 @@ class _RegisterViewState extends State<RegisterView> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      elevation: 0,
                     ),
-                    child: const Text('Sign Up',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                    child: const Text('Sign Up', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -101,11 +90,7 @@ class _RegisterViewState extends State<RegisterView> {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: controller.signInWithGoogle,
-                    icon: Image.asset(
-                      'assets/images/google.png',
-                      width: 24,
-                      height: 24,
-                    ),
+                    icon: Image.asset('assets/images/google.png', width: 24, height: 24),
                     label: const Text('Sign Up with Google'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,

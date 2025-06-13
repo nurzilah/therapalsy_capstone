@@ -1,14 +1,16 @@
-import 'dart:io';
-import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:get_storage/get_storage.dart';
 
 class ProfileController extends GetxController {
   var username = ''.obs;
   var email = ''.obs;
-  var profileImage = Rxn<String>();
+  var profileImage = RxnString();
   var lastLogin = ''.obs;
+
+  final box = GetStorage();
+  final apiUrl = 'https://evidently-moved-marmoset.ngrok-free.app/api/user';
 
   @override
   void onInit() {
@@ -16,41 +18,35 @@ class ProfileController extends GetxController {
     super.onInit();
   }
 
-  void fetchProfile() async {
-    var response = await http.get(Uri.parse("https://evidently-moved-marmoset.ngrok-free.app/api/user/profile"));
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      username.value = data['username'];
-      email.value = data['email'];
-      profileImage.value = data['profileImage'];
-      lastLogin.value = data['last_login'];
+  Future<void> fetchProfile() async {
+    final token = box.read('token');
+    if (token == null) {
+      Get.snackbar('Error', 'Token tidak ditemukan');
+      return;
     }
-  }
 
-  void saveProfile(String newName, String newEmail) async {
-    var response = await http.post(Uri.parse("https://evidently-moved-marmoset.ngrok-free.app/api/user/update"),
-      body: {"username": newName, "email": newEmail});
-    if (response.statusCode == 200) {
-      fetchProfile();
-      Get.back();
-    }
-  }
+    try {
+      final response = await http.get(
+        Uri.parse('$apiUrl/profile'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
 
-  void pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      var request = http.MultipartRequest('POST', Uri.parse("https://evidently-moved-marmoset.ngrok-free.app/api/user/upload"));
-      request.files.add(await http.MultipartFile.fromPath('file', pickedFile.path));
-      var res = await request.send();
-      if (res.statusCode == 200) {
-        fetchProfile();
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        username.value = data['username'] ?? '';
+        email.value = data['email'] ?? '';
+        profileImage.value = data['profileImage'] ?? '';
+        lastLogin.value = data['last_login'] ?? '';
+      } else {
+        Get.snackbar('Error', 'Gagal mengambil data profil (${response.statusCode})');
       }
+    } catch (e) {
+      Get.snackbar('Error', 'Terjadi kesalahan saat mengambil data profil');
     }
   }
 
   void logout() {
-    // implement your logic
+    box.erase();
     Get.offAllNamed('/login');
   }
 }

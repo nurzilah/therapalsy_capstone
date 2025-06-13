@@ -28,19 +28,16 @@ class AuthView extends GetView<AuthController> {
               obscureText: true,
             ),
             const SizedBox(height: 16),
-            // ElevatedButton(
-            //   onPressed: controller.isLoading.value ? null : controller.register,
-            //   child: const Text('Register'),
-            // ),
-            // ElevatedButton(
-            //   onPressed: controller.isLoading.value ? null : controller.login,
-            //   child: const Text('Login'),
-            // ),
+            ElevatedButton(
+              onPressed: controller.isLoading.value ? null : controller.register,
+              child: const Text('Register'),
+            ),
+            ElevatedButton(
+              onPressed: controller.isLoading.value ? null : controller.login,
+              child: const Text('Login'),
+            ),
             ElevatedButton.icon(
-              onPressed: () {
-                print("[UI DEBUG] Tombol Google Login ditekan");
-                controller.loginWithGoogle();
-              },
+              onPressed: controller.googleLogin,
               icon: const Icon(Icons.login),
               label: const Text('Login with Google'),
               style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),

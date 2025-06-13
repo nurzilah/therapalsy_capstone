@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
-import 'package:therapalsy_capstone/app/modules/models/user_model.dart';
 
 class AuthServices extends GetxService {
-  static const String baseUrl = 'https://evidently-moved-marmoset.ngrok-free.app'; // Ganti dengan URL backend kamu
+  final String baseUrl = 'https://evidently-moved-marmoset.ngrok-free.app/'; // Ganti dengan URL backend kamu
 
   // Register user
   Future<Map<String, dynamic>> register(String username, String email, String password) async {
@@ -43,31 +42,6 @@ class AuthServices extends GetxService {
     } else {
       final data = json.decode(response.body);
       return {'success': false, 'message': data['message'] ?? 'Login failed'};
-    }
-  }
-
-  // Login with Google
-  static Future<UserModel> googleLogin(String idToken) async {
-    final url = Uri.parse('$baseUrl/api/google-login');
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'id_token': idToken,
-      }),
-    );
-
-    print("Google Login Status: ${response.statusCode}");
-    print("Google Login Body: ${response.body}");
-
-    final data = jsonDecode(response.body);
-
-    if (response.statusCode == 200) {
-      return UserModel.fromJson(data);
-    } else {
-      return UserModel.error(data['message'] ?? 'Login Google gagal');
     }
   }
 
