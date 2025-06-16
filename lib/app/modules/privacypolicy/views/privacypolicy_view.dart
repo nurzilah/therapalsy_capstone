@@ -26,7 +26,7 @@ import '../controllers/privacypolicy_controller.dart';
             text,
             style: const TextStyle(
               fontWeight: FontWeight.w700,
-              color: Color(0xFF3DA18D),
+              color: Color(0xFF306A5A),
               fontSize: 16,
               letterSpacing: 1,
             ),
@@ -111,7 +111,7 @@ import '../controllers/privacypolicy_controller.dart';
                   child: ElevatedButton(
                     onPressed: () => Get.back(),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3DA18D),
+                      backgroundColor: const Color(0xFF306A5A),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(22),
                       ),

@@ -9,16 +9,19 @@ class RegisterController extends GetxController {
   var password = ''.obs;
   var name = ''.obs;
   var confirmPassword = ''.obs;
+  var isLoading = false.obs;
 
   final box = GetStorage();
 
   Future<void> registerUser() async {
     if (password.value != confirmPassword.value) {
-      Get.snackbar('Error', 'Password dan konfirmasi tidak sama!');
+      Get.snackbar('Error', 'Password and confirmation do not match!');
       return;
     }
 
     try {
+      isLoading.value = true;
+
       final response = await http.post(
         Uri.parse('https://evidently-moved-marmoset.ngrok-free.app/api/auth/register'),
         headers: {'Content-Type': 'application/json'},
@@ -29,14 +32,17 @@ class RegisterController extends GetxController {
         }),
       );
 
+      isLoading.value = false;
+
       if (response.statusCode == 201) {
-        Get.snackbar('Berhasil', 'OTP dikirim ke email');
+        Get.snackbar('Success', 'OTP has been sent to your email');
         Get.toNamed('/otp', arguments: {'email': email.value});
       } else {
-        Get.snackbar('Gagal', jsonDecode(response.body)['message'] ?? 'Terjadi kesalahan');
+        Get.snackbar('Failed', jsonDecode(response.body)['message'] ?? 'Something went wrong');
       }
     } catch (e) {
-      Get.snackbar('Error', 'Gagal menghubungi server: $e');
+      isLoading.value = false;
+      Get.snackbar('Error', 'Server error: $e');
     }
   }
 
@@ -52,7 +58,7 @@ class RegisterController extends GetxController {
       final idToken = googleAuth?.idToken;
 
       if (idToken == null) {
-        Get.snackbar('Error', 'Google ID Token tidak tersedia');
+        Get.snackbar('Error', 'Google ID Token is not available');
         return;
       }
 
@@ -67,14 +73,13 @@ class RegisterController extends GetxController {
         final user = data['data'];
         final token = data['access_token'];
 
-        // Simpan token & ID untuk akses nanti
         box.write('token', token);
         box.write('user_id', user['id']);
 
-        Get.snackbar('Success', 'Berhasil login dengan Google');
+        Get.snackbar('Success', 'Logged in with Google');
         Get.offAllNamed('/home');
       } else {
-        Get.snackbar('Gagal', jsonDecode(response.body)['message'] ?? 'Gagal login');
+        Get.snackbar('Failed', jsonDecode(response.body)['message'] ?? 'Login failed');
       }
     } catch (e) {
       Get.snackbar('Error', 'Google login error: $e');

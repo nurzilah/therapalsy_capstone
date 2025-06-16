@@ -25,6 +25,7 @@ abstract class Routes {
   static const PRIVACYPOLICY = _Paths.PRIVACYPOLICY;
   static const HISTORYLOGIN = _Paths.HISTORYLOGIN;
   static const CHANGEPASSWORD = _Paths.CHANGEPASSWORD;
+  static const STREAMLIT = _Paths.STREAMLIT;
 }
 
 abstract class _Paths {
@@ -52,4 +53,5 @@ abstract class _Paths {
   static const PRIVACYPOLICY = '/privacypolicy';
   static const HISTORYLOGIN = '/historylogin';
   static const CHANGEPASSWORD = '/changepassword';
+  static const STREAMLIT = '/streamlit';
 }

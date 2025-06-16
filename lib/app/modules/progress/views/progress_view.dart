@@ -388,7 +388,7 @@ class _ProgressBottomNav extends StatelessWidget {
             Get.offAll(() => const ProgressView());
             break;
           case 3:
-            Get.offAll(() => const ProfileView());
+            Get.offAll(() => ProfileView());
             break;
         }
       },

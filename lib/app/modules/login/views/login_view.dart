@@ -36,20 +36,18 @@ class _LoginViewState extends State<LoginView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Sign In', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.black)),
+                  const Text('Sign In', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   const Text(
                     "We're happy to have you!\nSign in to access your account.",
-                    style: TextStyle(fontSize: 18, color: Colors.black87, fontWeight: FontWeight.w400, height: 1.3),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400, height: 1.3),
                   ),
                   const SizedBox(height: 32),
-
                   _RoundedTextField(
                     hint: 'Email',
                     onChanged: (v) => controller.email.value = v,
                   ),
                   const SizedBox(height: 18),
-
                   _RoundedTextField(
                     hint: 'Password',
                     obscureText: _obscure,
@@ -59,31 +57,36 @@ class _LoginViewState extends State<LoginView> {
                       onPressed: () => setState(() => _obscure = !_obscure),
                     ),
                   ),
-
                   const SizedBox(height: 12),
                   Align(
                     alignment: Alignment.centerRight,
                     child: GestureDetector(
                       onTap: () => Get.to(() => ForgotView()),
-                      child: const Text('forgot password?', style: TextStyle(fontSize: 14, color: Colors.black87)),
+                      child: const Text('forgot password?', style: TextStyle(fontSize: 14)),
                     ),
                   ),
                   const SizedBox(height: 24),
 
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: controller.loginUser,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: mainGreen,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        elevation: 0,
-                      ),
-                      child: const Text('Sign In', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
-                    ),
-                  ),
+                  // Sign In Button with loading
+                  Obx(() => SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: controller.isLoading.value ? null : controller.loginUser,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: mainGreen,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            elevation: 0,
+                          ),
+                          child: controller.isLoading.value
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                )
+                              : const Text('Sign In', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                        ),
+                      )),
 
                   const SizedBox(height: 16),
                   SizedBox(
@@ -108,13 +111,12 @@ class _LoginViewState extends State<LoginView> {
                       Expanded(child: Divider(thickness: 1, color: Colors.black26)),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 8),
-                        child: Text('Don\'t have an account?', style: TextStyle(fontSize: 15, color: Colors.black87)),
+                        child: Text("Don't have an account?", style: TextStyle(fontSize: 15)),
                       ),
                       Expanded(child: Divider(thickness: 1, color: Colors.black26)),
                     ],
                   ),
                   const SizedBox(height: 18),
-
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton(
@@ -161,7 +163,7 @@ class _RoundedTextField extends StatelessWidget {
       style: const TextStyle(fontSize: 16),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w400),
+        hintStyle: const TextStyle(color: Colors.grey),
         filled: true,
         fillColor: Colors.white,
         contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
@@ -176,7 +178,7 @@ class _RoundedTextField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(28),
-          borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
       ),
     );

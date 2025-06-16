@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
 
 class ProfileController extends GetxController {
   var username = ''.obs;
   var email = ''.obs;
-  var profileImage = RxnString();
+  var profileImage = ''.obs;
   var lastLogin = ''.obs;
 
   final box = GetStorage();
@@ -18,7 +18,7 @@ class ProfileController extends GetxController {
     super.onInit();
   }
 
-  Future<void> fetchProfile() async {
+  void fetchProfile() async {
     final token = box.read('token');
     if (token == null) {
       Get.snackbar('Error', 'Token tidak ditemukan');
@@ -28,8 +28,14 @@ class ProfileController extends GetxController {
     try {
       final response = await http.get(
         Uri.parse('$apiUrl/profile'),
-        headers: {'Authorization': 'Bearer $token'},
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json'
+        },
       );
+
+      print("🟢 Status: ${response.statusCode}");
+      print("📦 Body: ${response.body}");
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -38,10 +44,11 @@ class ProfileController extends GetxController {
         profileImage.value = data['profileImage'] ?? '';
         lastLogin.value = data['last_login'] ?? '';
       } else {
-        Get.snackbar('Error', 'Gagal mengambil data profil (${response.statusCode})');
+        final error = jsonDecode(response.body);
+        Get.snackbar('Error', error['message'] ?? 'Gagal mengambil data profil');
       }
     } catch (e) {
-      Get.snackbar('Error', 'Terjadi kesalahan saat mengambil data profil');
+      Get.snackbar('Error', 'Terjadi kesalahan: $e');
     }
   }
 

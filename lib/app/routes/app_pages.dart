@@ -35,6 +35,8 @@ import '../modules/progress/bindings/progress_binding.dart';
 import '../modules/progress/views/progress_view.dart';
 import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/register_view.dart';
+import '../modules/streamlit/bindings/streamlit_binding.dart';
+import '../modules/streamlit/views/streamlit_view.dart';
 import '../modules/terapi/bindings/terapi_binding.dart';
 import '../modules/terapi/views/terapi_view.dart';
 
@@ -62,7 +64,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.REGISTER,
-      page: () => const RegisterView(),
+      page: () => RegisterView(),
       binding: RegisterBinding(),
     ),
     // Rute untuk SignInScreen
@@ -154,6 +156,11 @@ class AppPages {
       name: _Paths.CHANGEPASSWORD,
       page: () => const ChangepasswordView(),
       binding: ChangepasswordBinding(),
+    ),
+    GetPage(
+      name: _Paths.STREAMLIT,
+      page: () => const StreamlitView(),
+      binding: StreamlitBinding(),
     ),
   ];
 }

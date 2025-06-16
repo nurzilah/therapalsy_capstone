@@ -1,45 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:therapalsy_capstone/app/modules/home/controllers/home_controller.dart';
+import 'package:therapalsy_capstone/app/widgets/pie_chart_widget.dart';
+import 'package:therapalsy_capstone/app/widgets/bar_chart_widget.dart';
+
+import 'package:therapalsy_capstone/app/modules/streamlit/views/streamlit_view.dart';
 
 import '../../deteksi/views/deteksi_view.dart';
 import '../../profile/views/profile_view.dart';
 import '../../progress/views/progress_view.dart';
 import '../../terapi/views/terapi_view.dart';
-import '../controllers/home_controller.dart';
 
-class HomeView extends GetView<HomeController> {
+
+class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
   @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  final HomeController controller = Get.put(HomeController());
+
+  final Color mainGreen = const Color(0xFF316B5C);
+  final double cardHeight = 290;
+  final double cardRadius = 22;
+
+  final PageController _pageController = PageController(viewportFraction: 0.95);
+  int _currentPage = 0;
+
+  final List<_HomeCardData> cards = [
+    _HomeCardData(
+      bgColor: const Color(0xFFF7C6C6),
+      image: 'assets/images/dashboard.png',
+      title: "Lets Try\nFace exercise\nfor Bell’s Palsy\nnow!",
+      subtitle: "10 minutes",
+      buttonText: "LETS TRY !",
+      onPressed: () => Get.to(() => TerapiView()),
+    ),
+    _HomeCardData(
+      bgColor: const Color(0xFFF7C6C6),
+      image: 'assets/images/face1.png',
+      title: "Detect your face\nand start your\nrecovery journey\nnow!",
+      subtitle: "Fast Scan",
+      buttonText: "DETECT MY FACE",
+      onPressed: () => Get.offAll(() => const DeteksiView()),
+    ),
+  ];
+
+  @override
   Widget build(BuildContext context) {
-    final Color mainGreen = const Color(0xFF316B5C);
-    final double cardHeight = 290;
-    final double cardRadius = 22;
-
-    final List<_HomeCardData> cards = [
-      _HomeCardData(
-        bgColor: const Color(0xFFF7C6C6),
-        image: 'assets/images/dashboard.png',
-        title: "Lets Try\nFace exercise\nfor Bell’s Palsy\nnow!",
-        subtitle: "10 minutes",
-        buttonText: "LETS TRY !",
-        onPressed: () {
-          Get.to(() => TerapiView());
-        },
-      ),
-      _HomeCardData(
-        bgColor: const Color(0xFFF7C6C6),
-        image: 'assets/images/face1.png',
-        title: "Detect your face\nand start your\nrecovery journey\nnow!",
-        subtitle: "Fast Scan",
-        buttonText: "DETECT MY FACE",
-        onPressed: () {
-          Get.offAll(() => const DeteksiView());
-        },
-      ),
-    ];
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -62,14 +72,18 @@ class HomeView extends GetView<HomeController> {
             SizedBox(
               height: cardHeight + 16,
               child: PageView.builder(
+                controller: _pageController,
                 itemCount: cards.length,
-                controller: PageController(viewportFraction: 0.88),
+                onPageChanged: (index) {
+                  setState(() => _currentPage = index);
+                },
                 itemBuilder: (context, index) {
                   final data = cards[index];
                   return Padding(
                     padding: EdgeInsets.only(
-                        left: index == 0 ? 22 : 12,
-                        right: index == cards.length - 1 ? 22 : 12),
+                      left: index == 0 ? 22 : 12,
+                      right: index == cards.length - 1 ? 22 : 12,
+                    ),
                     child: _HomePinkCard(
                       data: data,
                       height: cardHeight,
@@ -81,12 +95,17 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
             const SizedBox(height: 16),
-            Center(child: _PageIndicator(count: cards.length)),
+            Center(
+              child: _PageIndicator(
+                count: cards.length,
+                currentIndex: _currentPage,
+              ),
+            ),
             const SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 22),
               child: Text(
-                "Tentang Bell’s Palsy",
+                "About Bell’s Palsy",
                 style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.w700,
@@ -112,6 +131,42 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
             const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 22),
+                child: Text(
+                  "Top 5 Most Viewed Videos",
+                  style: TextStyle(
+                    fontSize: 19,
+                    fontWeight: FontWeight.w700,
+                    color: mainGreen,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 22),
+                child: PieChartWidget(), // Widget Pie Chart
+              ),
+
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 22),
+                child: Text(
+                  "Top 10 Bell’s Palsy Channels",
+                  style: TextStyle(
+                    fontSize: 19,
+                    fontWeight: FontWeight.w700,
+                    color: mainGreen,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 22),
+                child: BarChartWidget(), // Widget Bar Chart
+              ),
+
+            const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18),
               child: ElevatedButton.icon(
@@ -126,9 +181,7 @@ class HomeView extends GetView<HomeController> {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
-                onPressed: () {
-                  Get.toNamed('/streamlit');
-                },
+                onPressed: () => Get.to(() => const StreamlitView()),
               ),
             ),
             const SizedBox(height: 30),
@@ -140,7 +193,6 @@ class HomeView extends GetView<HomeController> {
   }
 }
 
-// --- DATA CLASS ---
 class _HomeCardData {
   final Color bgColor;
   final String image;
@@ -159,7 +211,6 @@ class _HomeCardData {
   });
 }
 
-// --- CARD WIDGET ---
 class _HomePinkCard extends StatelessWidget {
   final _HomeCardData data;
   final double height;
@@ -185,8 +236,8 @@ class _HomePinkCard extends StatelessWidget {
         children: [
           Positioned(
             right: 0,
-            left: 60,
-            top: 0,
+            left: 115, // makin besar makin ke kanan
+            top: 20, // makin besar makin ke bawah
             bottom: 0,
             child: ClipRRect(
               borderRadius: BorderRadius.only(
@@ -195,7 +246,7 @@ class _HomePinkCard extends StatelessWidget {
               ),
               child: Image.asset(
                 data.image,
-                width: 350,
+                width: 300,
                 fit: BoxFit.contain,
               ),
             ),
@@ -263,22 +314,29 @@ class _HomePinkCard extends StatelessWidget {
   }
 }
 
-// --- PAGE INDICATOR ---
 class _PageIndicator extends StatelessWidget {
   final int count;
-  const _PageIndicator({required this.count});
+  final int currentIndex;
+
+  const _PageIndicator({
+    required this.count,
+    required this.currentIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(count, (index) {
-        return Container(
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
           width: 8,
           height: 8,
           margin: const EdgeInsets.symmetric(horizontal: 3),
           decoration: BoxDecoration(
-            color: index == 0 ? const Color(0xFF316B5C) : Colors.grey[300],
+            color: index == currentIndex
+                ? const Color(0xFF316B5C)
+                : Colors.grey[300],
             shape: BoxShape.circle,
           ),
         );
@@ -287,7 +345,6 @@ class _PageIndicator extends StatelessWidget {
   }
 }
 
-// --- FAQ CARD ---
 class _FaqCard extends StatelessWidget {
   final String title;
   final String content;
@@ -335,7 +392,6 @@ class _FaqCard extends StatelessWidget {
   }
 }
 
-// --- BOTTOM NAVIGATION ---
 class _HomeBottomNav extends StatelessWidget {
   final Color mainGreen;
   const _HomeBottomNav({required this.mainGreen});
@@ -366,7 +422,7 @@ class _HomeBottomNav extends StatelessWidget {
             Get.to(() => const ProgressView());
             break;
           case 3:
-            Get.to(() => const ProfileView());
+            Get.to(() => ProfileView());
             break;
         }
       },

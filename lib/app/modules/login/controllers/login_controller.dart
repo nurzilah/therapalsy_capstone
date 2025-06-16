@@ -1,18 +1,17 @@
+import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/foundation.dart';
-import 'dart:convert';
 
 class LoginController extends GetxController {
   var email = ''.obs;
   var password = ''.obs;
+  var isLoading = false.obs;
 
   final box = GetStorage();
 
-  // Ambil nama device (realme, iPhone, Samsung, dll)
   Future<String> getDeviceName() async {
     final deviceInfo = DeviceInfoPlugin();
     if (GetPlatform.isAndroid) {
@@ -27,16 +26,18 @@ class LoginController extends GetxController {
   }
 
   Future<void> loginUser() async {
+    if (isLoading.value) return;
+    isLoading.value = true;
+
     try {
       final device = await getDeviceName();
-
       final response = await http.post(
         Uri.parse('https://evidently-moved-marmoset.ngrok-free.app/api/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': email.value,
           'password': password.value,
-          'device': device, // ⬅️ kirim nama device ke backend
+          'device': device,
         }),
       );
 
@@ -48,58 +49,69 @@ class LoginController extends GetxController {
         box.write('token', token);
         box.write('user_id', user['id']);
 
-        Get.snackbar('Selamat datang', user['username']);
+        Get.snackbar('Welcome', user['username']);
         Get.offAllNamed('/home');
       } else {
-        Get.snackbar('Login Gagal', jsonDecode(response.body)['message']);
+        final error = jsonDecode(response.body);
+        Get.snackbar('Login Failed', error['message'] ?? 'Unknown error');
       }
     } catch (e) {
-      Get.snackbar('Error', 'Tidak dapat login: $e');
+      Get.snackbar('Error', 'Login failed: $e');
+    } finally {
+      isLoading.value = false;
     }
   }
 
   Future<void> signInWithGoogle() async {
+    final googleSignIn = GoogleSignIn(
+      clientId: '888475508285-5id3vm5h8rl2sf28pfthqc44cul5mfbv.apps.googleusercontent.com',
+      scopes: ['email'],
+    );
+
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        scopes: ['email'],
-        serverClientId: '888475508285-vv1sgvf71ehn12d4evdsdaf3gbmg5ttv.apps.googleusercontent.com',
-      );
+      // ⛔️ Tambahkan ini untuk mencegah auto-login akun sebelumnya
+      await googleSignIn.signOut();
 
-      final googleUser = await googleSignIn.signIn();
+      final googleUser = await googleSignIn.signIn(); // ⬅️ Sekarang akan tampil pilihan akun
       final googleAuth = await googleUser?.authentication;
-      final idToken = googleAuth?.idToken;
 
+      final idToken = googleAuth?.idToken;
       if (idToken == null) {
-        Get.snackbar('Error', 'Google ID Token tidak tersedia');
+        Get.snackbar("Error", "ID Token kosong");
         return;
       }
 
-      final device = await getDeviceName(); // ⬅️ ambil device untuk Google login juga
-
       final response = await http.post(
-        Uri.parse('https://evidently-moved-marmoset.ngrok-free.app/api/auth/google'),
-        headers: {'Content-Type': 'application/json'},
+        Uri.parse('https://evidently-moved-marmoset.ngrok-free.app/api/google-login'),
+        headers: {"Content-Type": "application/json"},
         body: jsonEncode({
-          'token': idToken,
-          'device': device, // ⬅️ kirim ke backend
+          "id_token": idToken,
+          "device": "Flutter",
         }),
       );
 
+      final data = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final user = data['data'];
-        final token = data['access_token'];
+        final user = data['user'];
+        final token = data['token'];
+
+        if (user == null || user['id'] == null) {
+          Get.snackbar("Error", "Data user tidak lengkap");
+          return;
+        }
 
         box.write('token', token);
         box.write('user_id', user['id']);
-
-        Get.snackbar('Success', 'Berhasil login dengan Google');
+        Get.snackbar("Welcome", "${user['username']} berhasil login");
         Get.offAllNamed('/home');
       } else {
-        Get.snackbar('Gagal', jsonDecode(response.body)['message'] ?? 'Gagal login');
+        Get.snackbar("Error", data['error'] ?? "Login gagal");
       }
     } catch (e) {
-      Get.snackbar('Error', 'Google login error: $e');
+      print("🔥 Google login error: $e");
+      Get.snackbar("Error", "Terjadi kesalahan saat login Google");
     }
   }
+
+
 }

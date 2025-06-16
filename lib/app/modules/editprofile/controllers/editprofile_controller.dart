@@ -1,26 +1,29 @@
-import 'dart:convert';
 import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import '../../profile/controllers/profile_controller.dart';
 
 class EditprofileController extends GetxController {
+  final usernameController = ''.obs;
+  final emailController = ''.obs;
+  final imagePath = Rxn<File>();
+  final networkImage = ''.obs;
+
+  final isLoading = false.obs;
   final box = GetStorage();
   final apiUrl = 'https://evidently-moved-marmoset.ngrok-free.app/api/user';
 
-  var usernameController = ''.obs;
-  var emailController = ''.obs;
-  var imagePath = Rxn<File>();
-
   @override
   void onInit() {
-    fetchProfile();
     super.onInit();
+    fetchCurrentProfile();
   }
 
-  void fetchProfile() async {
+  void fetchCurrentProfile() async {
     final token = box.read('token');
     if (token == null) return;
 
@@ -33,35 +36,21 @@ class EditprofileController extends GetxController {
       final data = jsonDecode(response.body);
       usernameController.value = data['username'] ?? '';
       emailController.value = data['email'] ?? '';
-    } else {
-      Get.snackbar('Error', 'Gagal mengambil data profil');
+      networkImage.value = data['profileImage'] ?? '';
     }
   }
 
-  void pickAndUploadImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      imagePath.value = File(pickedFile.path);
-    }
-  }
-
-  Future<void> updateProfile() async {
-    await _updateUsernameEmail();
-    await _uploadProfilePicture();
-
-    Get.back(); // kembali ke halaman profile
-    Get.snackbar('Sukses', 'Profil berhasil diperbarui');
-  }
-
-  Future<void> _updateUsernameEmail() async {
+  void updateProfile() async {
     final token = box.read('token');
+    if (token == null) return;
+
+    isLoading.value = true;
+
     final response = await http.patch(
       Uri.parse('$apiUrl/update'),
       headers: {
-        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
         'username': usernameController.value,
@@ -69,26 +58,71 @@ class EditprofileController extends GetxController {
       }),
     );
 
-    if (response.statusCode != 200) {
-      Get.snackbar('Error', 'Gagal update nama/email');
+    isLoading.value = false;
+
+    if (response.statusCode == 200) {
+      Get.snackbar(
+        'Berhasil',
+        'Username berhasil diperbarui',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+      Get.find<ProfileController>().fetchProfile();
+      await Future.delayed(const Duration(milliseconds: 1500));
+      Get.back();
+    } else {
+      Get.snackbar(
+        'Gagal',
+        'Gagal memperbarui profil',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
-  Future<void> _uploadProfilePicture() async {
-    if (imagePath.value == null) return;
+  void pickAndUploadImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      imagePath.value = File(picked.path);
+      await uploadProfileImage(imagePath.value!);
+    }
+  }
 
+  Future<void> uploadProfileImage(File imageFile) async {
     final token = box.read('token');
-    final request = http.MultipartRequest(
-      'POST',
-      Uri.parse('$apiUrl/upload'),
-    )
+    if (token == null) return;
+
+    final request = http.MultipartRequest('POST', Uri.parse('$apiUrl/upload'))
       ..headers['Authorization'] = 'Bearer $token'
-      ..files.add(await http.MultipartFile.fromPath('file', imagePath.value!.path));
+      ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
 
     final response = await request.send();
+    if (response.statusCode == 200) {
+      final res = await http.Response.fromStream(response);
+      final data = jsonDecode(res.body);
+      networkImage.value = data['profile_image'];
+      Get.find<ProfileController>().fetchProfile();
 
-    if (response.statusCode != 200) {
-      Get.snackbar('Error', 'Gagal upload foto profil');
+      Get.snackbar(
+        'Berhasil',
+        'Foto profil berhasil diperbarui',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+    } else {
+      Get.snackbar(
+        'Gagal',
+        'Gagal mengunggah foto',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 }

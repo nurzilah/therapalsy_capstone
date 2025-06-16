@@ -7,7 +7,6 @@ import 'package:therapalsy_capstone/app/modules/faq/views/faq_view.dart';
 import 'package:therapalsy_capstone/app/modules/privacypolicy/views/privacypolicy_view.dart';
 import 'package:therapalsy_capstone/app/modules/privacypolicy/bindings/privacypolicy_binding.dart';
 import 'package:therapalsy_capstone/app/modules/historylogin/views/historylogin_view.dart';
-
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends StatelessWidget {
@@ -15,7 +14,7 @@ class ProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<ProfileController>(); // Gunakan Get.find karena sudah di-bind sebelumnya
+    final controller = Get.put(ProfileController());
     final Color mainGreen = const Color(0xFF306A5A);
 
     return Scaffold(
@@ -38,12 +37,7 @@ class ProfileView extends StatelessWidget {
                         child: Center(
                           child: Text(
                             'PROFILE',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 2,
-                              color: Colors.white,
-                            ),
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: 2, color: Colors.white),
                           ),
                         ),
                       ),
@@ -65,14 +59,15 @@ class ProfileView extends StatelessWidget {
                       color: Colors.white,
                     ),
                     child: ClipOval(
-                      child: imageUrl != null && imageUrl.isNotEmpty
+                      child: imageUrl != null
                           ? Image.network(
-                              imageUrl,
+                              'https://evidently-moved-marmoset.ngrok-free.app/$imageUrl',
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Image.asset('assets/images/terapi.png', fit: BoxFit.cover),
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset('assets/images/pp.png', fit: BoxFit.cover);
+                              },
                             )
-                          : Image.asset('assets/images/terapi.png', fit: BoxFit.cover),
+                          : Image.asset('assets/images/pp.png', fit: BoxFit.cover),
                     ),
                   );
                 }),
@@ -81,18 +76,19 @@ class ProfileView extends StatelessWidget {
 
                 // Username & Email
                 Obx(() => Column(
-                  children: [
-                    Text(
-                      controller.username.value,
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      controller.email.value,
-                      style: const TextStyle(fontSize: 14.5, color: Colors.black54),
-                    ),
-                  ],
-                )),
+                      children: [
+                        Text(
+                          controller.username.value,
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          controller.email.value,
+                          style: const TextStyle(fontSize: 14.5, color: Colors.black54),
+                        ),
+                      ],
+                    )),
+
                 const SizedBox(height: 14),
 
                 // Edit Profile Button
@@ -101,10 +97,7 @@ class ProfileView extends StatelessWidget {
                   child: SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () async {
-                        await Get.to(() => EditProfileView());
-                        await controller.fetchProfile(); // Refresh profil
-                      },
+                      onPressed: () => Get.to(() => EditProfileView()),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: mainGreen,
                         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -129,7 +122,7 @@ class ProfileView extends StatelessWidget {
                 _ProfileMenuItem(
                   icon: Icons.privacy_tip_outlined,
                   text: 'Privacy Policy',
-                  onTap: () => Get.to(() => const PrivacyPolicyView(), binding: PrivacypolicyBinding()),
+                  onTap: () => Get.to(() => PrivacyPolicyView(), binding: PrivacypolicyBinding()),
                 ),
                 _ProfileMenuItem(
                   icon: Icons.help_outline,
@@ -156,9 +149,9 @@ class ProfileView extends StatelessWidget {
                   onTap: () {
                     Get.defaultDialog(
                       title: "Logout",
-                      middleText: "Apakah kamu yakin ingin keluar?",
-                      textCancel: "Batal",
-                      textConfirm: "Ya",
+                      middleText: "Are you sure you want to log out?",
+                      textCancel: "Cancel",
+                      textConfirm: "Yes",
                       confirmTextColor: Colors.white,
                       onConfirm: controller.logout,
                     );

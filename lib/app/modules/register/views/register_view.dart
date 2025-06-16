@@ -1,22 +1,19 @@
+// register_view.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/register_controller.dart';
 
-class RegisterView extends StatefulWidget {
-  const RegisterView({super.key});
-
-  @override
-  State<RegisterView> createState() => _RegisterViewState();
-}
-
-class _RegisterViewState extends State<RegisterView> {
+class RegisterView extends StatelessWidget {
+  RegisterView({super.key});
   final RegisterController controller = Get.put(RegisterController());
-  bool _obscurePassword = true;
-  bool _obscureConfirm = true;
+
   final Color mainGreen = const Color(0xFF316B5C);
 
   @override
   Widget build(BuildContext context) {
+    bool _obscurePassword = true;
+    bool _obscureConfirm = true;
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -39,52 +36,70 @@ class _RegisterViewState extends State<RegisterView> {
                 const Text('Create a new account to get started.',
                     style: TextStyle(fontSize: 16, color: Colors.black87)),
                 const SizedBox(height: 32),
-                _RoundedTextField(
-                  hint: 'Name',
-                  onChanged: (v) => controller.name.value = v,
-                ),
+
+                _RoundedTextField(hint: 'Name', onChanged: (v) => controller.name.value = v),
                 const SizedBox(height: 18),
+
                 _RoundedTextField(
                   hint: 'Email',
                   keyboardType: TextInputType.emailAddress,
                   onChanged: (v) => controller.email.value = v,
                 ),
                 const SizedBox(height: 18),
-                _RoundedTextField(
-                  hint: 'Password',
-                  obscureText: _obscurePassword,
-                  onChanged: (v) => controller.password.value = v,
-                  suffix: IconButton(
-                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
-                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                  ),
+
+                StatefulBuilder(
+                  builder: (context, setState) {
+                    return _RoundedTextField(
+                      hint: 'Password',
+                      obscureText: _obscurePassword,
+                      onChanged: (v) => controller.password.value = v,
+                      suffix: IconButton(
+                        icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 18),
-                _RoundedTextField(
-                  hint: 'Confirm Password',
-                  obscureText: _obscureConfirm,
-                  onChanged: (v) => controller.confirmPassword.value = v,
-                  suffix: IconButton(
-                    icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
-                    onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
-                  ),
+
+                StatefulBuilder(
+                  builder: (context, setState) {
+                    return _RoundedTextField(
+                      hint: 'Confirm Password',
+                      obscureText: _obscureConfirm,
+                      onChanged: (v) => controller.confirmPassword.value = v,
+                      suffix: IconButton(
+                        icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility),
+                        onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 28),
-                SizedBox(
+
+                Obx(() => SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: controller.registerUser,
+                    onPressed: controller.isLoading.value ? null : controller.registerUser,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: mainGreen,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
-                    child: const Text('Sign Up', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                    child: controller.isLoading.value
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text('Sign Up', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                   ),
-                ),
+                )),
+
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
@@ -97,25 +112,25 @@ class _RegisterViewState extends State<RegisterView> {
                       foregroundColor: Colors.black,
                       side: const BorderSide(color: Colors.grey),
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 24),
                 Row(
                   children: const [
                     Expanded(child: Divider(thickness: 1, color: Colors.black26)),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Text('Already have an account?',
+                      child: Text("Already have an account?",
                           style: TextStyle(fontSize: 15, color: Colors.black87)),
                     ),
                     Expanded(child: Divider(thickness: 1, color: Colors.black26)),
                   ],
                 ),
                 const SizedBox(height: 18),
+
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
@@ -123,9 +138,7 @@ class _RegisterViewState extends State<RegisterView> {
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       side: BorderSide(color: mainGreen),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
                     child: const Text('Sign In'),
                   ),
@@ -163,7 +176,7 @@ class _RoundedTextField extends StatelessWidget {
       style: const TextStyle(fontSize: 16),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w400),
+        hintStyle: const TextStyle(color: Colors.grey),
         filled: true,
         fillColor: Colors.white,
         contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
@@ -171,14 +184,6 @@ class _RoundedTextField extends StatelessWidget {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(28),
           borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
-          borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
         ),
       ),
     );
