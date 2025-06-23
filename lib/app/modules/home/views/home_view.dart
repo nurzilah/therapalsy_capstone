@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:therapalsy_capstone/app/modules/home/controllers/home_controller.dart';
+import 'package:therapalsy_capstone/app/modules/models/article_model.dart';
 import 'package:therapalsy_capstone/app/widgets/pie_chart_widget.dart';
 import 'package:therapalsy_capstone/app/widgets/bar_chart_widget.dart';
-
 import 'package:therapalsy_capstone/app/modules/streamlit/views/streamlit_view.dart';
-
 import '../../deteksi/views/deteksi_view.dart';
 import '../../profile/views/profile_view.dart';
 import '../../progress/views/progress_view.dart';
 import '../../terapi/views/terapi_view.dart';
-
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -21,11 +19,9 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   final HomeController controller = Get.put(HomeController());
-
   final Color mainGreen = const Color(0xFF316B5C);
   final double cardHeight = 290;
   final double cardRadius = 22;
-
   final PageController _pageController = PageController(viewportFraction: 0.95);
   int _currentPage = 0;
 
@@ -74,33 +70,23 @@ class _HomeViewState extends State<HomeView> {
               child: PageView.builder(
                 controller: _pageController,
                 itemCount: cards.length,
-                onPageChanged: (index) {
-                  setState(() => _currentPage = index);
-                },
-                itemBuilder: (context, index) {
-                  final data = cards[index];
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      left: index == 0 ? 22 : 12,
-                      right: index == cards.length - 1 ? 22 : 12,
-                    ),
-                    child: _HomePinkCard(
-                      data: data,
-                      height: cardHeight,
-                      borderRadius: cardRadius,
-                      mainGreen: mainGreen,
-                    ),
-                  );
-                },
+                onPageChanged: (index) => setState(() => _currentPage = index),
+                itemBuilder: (context, index) => Padding(
+                  padding: EdgeInsets.only(
+                    left: index == 0 ? 22 : 12,
+                    right: index == cards.length - 1 ? 22 : 12,
+                  ),
+                  child: _HomePinkCard(
+                    data: cards[index],
+                    height: cardHeight,
+                    borderRadius: cardRadius,
+                    mainGreen: mainGreen,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 16),
-            Center(
-              child: _PageIndicator(
-                count: cards.length,
-                currentIndex: _currentPage,
-              ),
-            ),
+            Center(child: _PageIndicator(count: cards.length, currentIndex: _currentPage)),
             const SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 22),
@@ -114,58 +100,67 @@ class _HomeViewState extends State<HomeView> {
               ),
             ),
             const SizedBox(height: 14),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5),
-              child: _FaqCard(
-                title: "Apa itu Bell’s Palsy?",
-                content: "lorem ipsum dolor amet hehhe\nbaca selengkapnya?",
-                mainGreen: mainGreen,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5),
-              child: _FaqCard(
-                title: "Apa Penyebab Bells Palsy?",
-                content: "lorem ipsum dolor amet hehhe\nbaca selengkapnya?",
-                mainGreen: mainGreen,
-              ),
-            ),
+            Obx(() => controller.articles.isEmpty
+              ? const Center(child: Text("No articles found."))
+              : Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: Column(
+                    children: controller.articles.map((article) {
+                      final preview = article.definisi.length > 80
+                          ? '${article.definisi.substring(0, 80)}...\nbaca selengkapnya?'
+                          : article.definisi;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        child: InkWell(
+                          onTap: () {
+                            // Sesuaikan kalau mau detail page
+                            Get.toNamed('/article', arguments: article);
+                          },
+                          child: _FaqCard(
+                            title: article.title,
+                            content: preview,
+                            mainGreen: mainGreen,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                )),
+
             const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 22),
-                child: Text(
-                  "Top 5 Most Viewed Videos",
-                  style: TextStyle(
-                    fontSize: 19,
-                    fontWeight: FontWeight.w700,
-                    color: mainGreen,
-                  ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 22),
+              child: Text(
+                "Top 5 Most Viewed Videos",
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w700,
+                  color: mainGreen,
                 ),
               ),
-              const SizedBox(height: 12),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 22),
-                child: PieChartWidget(), // Widget Pie Chart
-              ),
-
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 22),
-                child: Text(
-                  "Top 10 Bell’s Palsy Channels",
-                  style: TextStyle(
-                    fontSize: 19,
-                    fontWeight: FontWeight.w700,
-                    color: mainGreen,
-                  ),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 22),
+              child: PieChartWidget(),
+            ),
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 22),
+              child: Text(
+                "Top 10 Bell’s Palsy Channels",
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w700,
+                  color: mainGreen,
                 ),
               ),
-              const SizedBox(height: 12),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 22),
-                child: BarChartWidget(), // Widget Bar Chart
-              ),
-
+            ),
+            const SizedBox(height: 12),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 22),
+              child: BarChartWidget(),
+            ),
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -236,8 +231,8 @@ class _HomePinkCard extends StatelessWidget {
         children: [
           Positioned(
             right: 0,
-            left: 115, // makin besar makin ke kanan
-            top: 20, // makin besar makin ke bawah
+            left: 115,
+            top: 20,
             bottom: 0,
             child: ClipRRect(
               borderRadius: BorderRadius.only(
@@ -318,10 +313,7 @@ class _PageIndicator extends StatelessWidget {
   final int count;
   final int currentIndex;
 
-  const _PageIndicator({
-    required this.count,
-    required this.currentIndex,
-  });
+  const _PageIndicator({required this.count, required this.currentIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -334,9 +326,7 @@ class _PageIndicator extends StatelessWidget {
           height: 8,
           margin: const EdgeInsets.symmetric(horizontal: 3),
           decoration: BoxDecoration(
-            color: index == currentIndex
-                ? const Color(0xFF316B5C)
-                : Colors.grey[300],
+            color: index == currentIndex ? const Color(0xFF316B5C) : Colors.grey[300],
             shape: BoxShape.circle,
           ),
         );
@@ -350,11 +340,7 @@ class _FaqCard extends StatelessWidget {
   final String content;
   final Color mainGreen;
 
-  const _FaqCard({
-    required this.title,
-    required this.content,
-    required this.mainGreen,
-  });
+  const _FaqCard({required this.title, required this.content, required this.mainGreen});
 
   @override
   Widget build(BuildContext context) {

@@ -26,6 +26,8 @@ abstract class Routes {
   static const HISTORYLOGIN = _Paths.HISTORYLOGIN;
   static const CHANGEPASSWORD = _Paths.CHANGEPASSWORD;
   static const STREAMLIT = _Paths.STREAMLIT;
+  static const ARTICLE = _Paths.ARTICLE;
+  static const ARTICLE_DETAIL = _Paths.ARTICLE_DETAIL;
 }
 
 abstract class _Paths {
@@ -54,4 +56,6 @@ abstract class _Paths {
   static const HISTORYLOGIN = '/historylogin';
   static const CHANGEPASSWORD = '/changepassword';
   static const STREAMLIT = '/streamlit';
+  static const ARTICLE = '/article';
+  static const ARTICLE_DETAIL = '/article-detail';
 }

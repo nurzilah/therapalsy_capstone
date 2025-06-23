@@ -47,7 +47,7 @@ class DeteksiView extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 100),
+            const SizedBox(height: 24),
             // Box peringatan
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
@@ -145,7 +145,7 @@ class DeteksiView extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 32),
             // Tombol Start Detection
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 36),
@@ -159,7 +159,7 @@ class DeteksiView extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: mainGreen,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

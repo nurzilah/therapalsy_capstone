@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/article/bindings/article_binding.dart';
+import '../modules/article/views/article_view.dart';
 import '../modules/auth/bindings/auth_binding.dart';
 import '../modules/auth/views/splash_screen.dart';
 import '../modules/auth/views/welcome_screen.dart';
@@ -161,6 +163,11 @@ class AppPages {
       name: _Paths.STREAMLIT,
       page: () => const StreamlitView(),
       binding: StreamlitBinding(),
+    ),
+    GetPage(
+      name: _Paths.ARTICLE,
+      page: () =>  ArticleView(),
+      binding: ArticleBinding(),
     ),
   ];
 }
